@@ -504,8 +504,6 @@ export default function Home() {
     const timeout = setTimeout(() => {
       if (typeof window === "undefined") return;
       localStorage.setItem(DRAFT_KEY, markdown);
-      savedMarkdownRef.current = markdown;
-      setIsDirty(false);
     }, 800);
     return () => clearTimeout(timeout);
   }, [markdown]);

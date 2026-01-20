@@ -1,6 +1,32 @@
 # Defter — Minimalist writing room
 
-Single-page, distraction-free writing app with rich text, contextual AI edits, and clean PDF output.
+**Defter** (Turkish for "notebook") is a focused, single-page writing application designed for distraction-free markdown composition with intelligent AI assistance. Built with Next.js and React, it provides a clean, native-feeling writing experience directly in the browser.
+
+## What it does
+
+Defter combines the simplicity of a text editor with modern conveniences:
+
+- **Rich markdown editing**: Write in a WYSIWYG-style editor with live markdown rendering using `marked` and inline formatting (bold, italic, underline). Your content is stored as markdown under the hood, converted seamlessly via `turndown`.
+- **Contextual AI edits**: Highlight any text and ask AI to rewrite, expand, or refine it. The app sends your selection along with surrounding context to OpenAI's Responses API, which returns structured replacement text that preserves your document's flow.
+- **Math support**: Write LaTeX expressions inline (`$...$`) or as display blocks (`$$...$$`), rendered instantly with KaTeX.
+- **Native file handling**: Uses the File System Access API (where supported) to open, edit, and save `.md` files directly to disk—no downloads required. Falls back gracefully on other browsers.
+- **Autosave & safety**: Drafts are continuously saved to localStorage. Manual save writes to a file handle or triggers a download.
+- **Print-ready output**: One-click PDF export via browser print with clean A4 formatting.
+- **Adaptive UI**: System-aware dark/light theme with manual override, fullscreen mode, and mobile-safe spacing.
+
+## How it works
+
+The editor is a `contentEditable` div that renders markdown as HTML on every keystroke. User input is immediately parsed with `marked`, math expressions are processed with `katex`, and the result is displayed inline. When you save, the HTML is converted back to clean markdown via `turndown`.
+
+AI edits leverage OpenAI's Responses API with structured output (JSON schema). When you select text and provide a prompt, the app sends:
+- The full document (plain text and markdown)
+- The selected text
+- 500 characters of context before and after the selection
+- Position metadata (start/end offsets, percentage through document)
+
+The server-side route (`/api/ai`) calls the Responses API with strict schema validation and returns only the replacement text, which is inserted at the selection point. An undo toast appears immediately, allowing you to revert via a button or native `Ctrl/Cmd+Z`.
+
+File operations prefer the File System Access API for a native feel: opening a file establishes a handle that subsequent saves write to directly, avoiding repeated save dialogs. On unsupported browsers, the app falls back to traditional file pickers and downloads.
 
 ## Quick start
 
@@ -28,7 +54,7 @@ npm run start
 - Persistent buttons (icons only): New, Open, Save, Print PDF, Theme, Fullscreen.
 - Selection toolbar (appears only on highlight): Bold, Italic, Underline, Ask AI.
 - Keyboard: `⌘/Ctrl+S` save, `⌘/Ctrl+O` open, `⌘/Ctrl+N` new, `⌘/Ctrl+P` print, `⌘/Ctrl+Shift+F` fullscreen (Esc exits), `⌘/Ctrl+Shift+L` toggle theme, `⌘/Ctrl+Z` undo.
-- Autosave: markdown draft stored locally as a safety net.
+- Autosave: markdown draft stored locally as a safety net (does not mark the file as saved—use Save to clear the dirty state).
 - Dark/light: follows system by default, persists preference in `localStorage`.
 - Fullscreen: uses the Fullscreen API where available; Esc exits.
 
