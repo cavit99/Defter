@@ -1,26 +1,161 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --ink: #0f172a;
+  --muted: #5b6472;
+  --surface: #f7f2e9;
+  --paper: #ffffff;
+  --sand: #f1e6d7;
+  --void: #0b0d17;
+  --accent: #9af7c4;
+  --border: #e6dfd3;
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --ink: #e9ecf2;
+    --muted: #9aa3b2;
+    --surface: #0f111a;
+    --paper: #141725;
+    --sand: #121521;
+    --void: #05060c;
+    --accent: #8af0c0;
+    --border: #1f2230;
+    color-scheme: dark;
   }
 }
 
+body[data-theme="light"] {
+  --ink: #0f172a;
+  --muted: #5b6472;
+  --surface: #f7f2e9;
+  --paper: #ffffff;
+  --sand: #f1e6d7;
+  --void: #0b0d17;
+  --accent: #9af7c4;
+  --border: #e6dfd3;
+  color-scheme: light;
+}
+
+body[data-theme="dark"] {
+  --ink: #e9ecf2;
+  --muted: #9aa3b2;
+  --surface: #0f111a;
+  --paper: #141725;
+  --sand: #121521;
+  --void: #05060c;
+  --accent: #8af0c0;
+  --border: #1f2230;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-paper: var(--paper);
+  --color-sand: var(--sand);
+  --color-void: var(--void);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --font-sans: var(--font-ui);
+  --font-body: var(--font-body);
+}
+
+* {
+  scrollbar-width: thin;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body), "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.button-chip {
+  @apply rounded-full border border-ink/10 bg-paper px-4 py-2 text-sm font-semibold text-ink shadow-sm transition hover:-translate-y-[1px] hover:shadow-md active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70;
+}
+
+.icon-button {
+  @apply flex h-9 w-9 items-center justify-center rounded-full bg-paper text-ink shadow-sm transition hover:-translate-y-[1px] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70;
+}
+
+.editor {
+  min-height: 60vh;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.editor:empty:before {
+  content: attr(data-placeholder);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.editor h1,
+.editor h2,
+.editor h3 {
+  margin-top: 1.2em;
+  margin-bottom: 0.6em;
+  font-weight: 700;
+}
+
+.editor p {
+  margin: 0 0 0.8em 0;
+}
+
+.editor ul,
+.editor ol {
+  margin: 0.6em 0 0.6em 1.4em;
+  padding: 0;
+}
+
+.math-inline {
+  display: inline-flex;
+  align-items: center;
+}
+
+.math-block {
+  margin: 1em 0;
+  padding: 0.6em;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--paper) 80%, transparent);
+}
+
+@page {
+  size: A4;
+  margin: 20mm;
+}
+
+@media print {
+  body {
+    background: white;
+  }
+  header,
+  nav,
+  button,
+  .icon-button,
+  .button-chip,
+  .fixed,
+  .sticky {
+    display: none !important;
+  }
+  main,
+  section,
+  .editor {
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+  }
 }

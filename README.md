@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Defter — Minimalist writing room
 
-## Getting Started
+Single-page, distraction-free writing app with rich text, contextual AI edits, and clean PDF output.
 
-First, run the development server:
+## Quick start
 
 ```bash
+npm install
+cp .env.example .env.local   # set your API key inside
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Production build:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment
 
-## Learn More
+- `OPENAI_API_KEY` (required) – server-side key for the AI endpoint.
+- `OPENAI_MODEL` (optional) – Responses API model name. Defaults to `gpt-5.2`.
 
-To learn more about Next.js, take a look at the following resources:
+## Controls & shortcuts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Persistent buttons (icons only): New, Open, Save, Print PDF, Theme, Fullscreen.
+- Selection toolbar (appears only on highlight): Bold, Italic, Underline, Ask AI.
+- Keyboard: `⌘/Ctrl+S` save, `⌘/Ctrl+O` open, `⌘/Ctrl+N` new, `⌘/Ctrl+P` print, `⌘/Ctrl+Shift+F` fullscreen (Esc exits), `⌘/Ctrl+Shift+L` toggle theme, `⌘/Ctrl+Z` undo.
+- Autosave: markdown draft stored locally as a safety net.
+- Dark/light: follows system by default, persists preference in `localStorage`.
+- Fullscreen: uses the Fullscreen API where available; Esc exits.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## File handling
 
-## Deploy on Vercel
+- `New`: clears the editor; confirmation appears when unsaved changes exist.
+- `Open`: prefers the File System Access API for `.md`/`.txt`; falls back to a file picker where unsupported.
+- `Save`: writes back to the same handle when supported; otherwise downloads a `.md` file.
+- `Print PDF`: uses `window.print()` with A4-friendly print styles.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## AI edits
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Selection toolbar → Ask AI opens an anchored prompt.
+- Sends document text, selected text, user prompt, offsets/length/percent, and 500-char prefix/suffix context to `/api/ai`.
+- Server-side route calls OpenAI Responses API (structured output) and returns replacement text only; selection is replaced and an "AI edit applied. Undo" toast appears (button + native undo, auto-dismisses).
+
+## Math rendering
+
+- Inline math: wrap LaTeX expressions with single dollar signs: `$E = mc^2$`
+- Block math: wrap with double dollar signs on separate lines:
+  ```
+  $$
+  \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+  $$
+  ```
+- Uses KaTeX for fast, client-side rendering.
+
+## Browser notes
+
+- File System Access works best in Chromium-based desktop browsers; Safari/Firefox fall back to download/upload.
+- Fullscreen may be limited on some mobile browsers; Esc (or browser UI) exits when supported.
+- Uses safe-area insets for iOS padding.
+
+## Deploy
+
+Deploy to Vercel (or any Node-capable host):
+
+1. Set `OPENAI_API_KEY` (and optional `OPENAI_MODEL`) in project environment variables.
+2. `npm run build` during CI.
+3. Serve with `npm run start` (Vercel handles this automatically).
